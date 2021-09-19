@@ -1,0 +1,55 @@
+version: "3.7"
+services:
+  app:
+    build:
+      args:
+        user: sammy
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: marvel
+    container_name: marvel-app
+    restart: unless-stopped
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - marvel
+
+  db:
+   image: mysql:5.7
+   container_name: marvel-db
+   restart: unless-stopped
+   environment:
+     MYSQL_DATABASE: marvel
+     MYSQL_ROOT_PASSWORD: password
+     MYSQL_PASSWORD: user
+     MYSQL_USER: user
+     SERVICE_TAGS: dev
+     SERVICE_NAME: mysql
+   volumes:
+     - dbdata:/var/lib/mysql/
+     - ./docker-compose/db/my.cnf:/etc/mysql/my.cnf
+   networks:
+     - marvel
+
+  nginx:
+    image: nginx:alpine
+    container_name: marvel-nginx
+    restart: unless-stopped
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www
+      - ./docker-compose/nginx:/etc/nginx/conf.d/
+    networks:
+      - marvel
+
+networks:
+  marvel:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local

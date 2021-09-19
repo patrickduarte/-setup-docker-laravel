@@ -1,0 +1,84 @@
+*******************************************************
+AUTOR: Patrick Duarte
+Instruções de como utilizar o ambiente des, que está preparado
+para trabalhar com debug tanto no vscode como no sublime
+*******************************************************
+
+
+
+Executar
+
+# Contruir os containers a partir do docker-compose
+$ docker-compose build app
+
+#rodar os containers em segundo plano e de forma persistinte
+$ docker-compose up -d
+
+#Ver os processos rodando
+$ docker-compose ps
+
+
+Destruir o container
+
+//Destroi mas mantem os volumes
+# docker-compose down   
+
+
+CUIDADO - Isso vai destruir tudo e sem recuperação, pois vai excluir os volumes
+# docker-compose down -v
+
+#mostra o ip que o container está usando
+$ docker inspect nome-container | grep IP
+
+
+$ docker-compose exec app [COMANDO]
+
+[PROJETO LARAVEL USANDO PASSPORT]
+
+Dentro do diretório raiz do projeto laravel, execute:
+
+
+$ docker-compose exec app composer install
+
+$ docker-compose exec app php artisan key:generate
+
+$ docker-compose exec app php artisan config:cache
+
+$ docker-compose exec app composer require laravel/passport
+
+$ docker-compose exec app php artisan migrate
+
+$ docker-compose exec app php artisan passport:install 
+OU
+$ docker-compose exec app php artisan passport:install --force
+
+$ docker ps  (pode ser executado de qualquer diretório para ver os containers em execução)
+
+
+[COMANDO GITS]
+
+
+$ git init
+
+$ git status
+
+$ git add .
+
+$ git commit -m "TEXTO AQUI PARA LEMBRAR VERSAO"
+
+$ git branch -M main   (vai setar para branch principal)
+
+$ git remote add origin git@github.com:usename/seurepositorio.git
+
+$ git push -u origin main
+
+
+
+
+
+
+
+
+
+
+
