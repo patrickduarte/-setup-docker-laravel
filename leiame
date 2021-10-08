@@ -73,6 +73,84 @@ $ git remote add origin git@github.com:usename/seurepositorio.git
 $ git push -u origin main
 
 
+SOBRE O XDEBUG
+
+Lembre-se que:
+
+1. A porta que o xdebug vai utilizar, no caso a 9000 ou 9003 (xdebug v3) deve estar liberada no firewall. Ou se não, desabilite ela. Isso é necessário 
+para que o processo de debug funcione.
+
+2. No vscode, a sugestão de configuração do launch.json é:
+
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Xdebug for Project mytest",
+            "type": "php",
+            "request": "launch",
+            "port": 9000,
+            "pathMappings": {
+                "/var/www": "${workspaceFolder}"
+            }
+        }, {
+            "name": "Launch currently open script",
+            "type": "php",
+            "request": "launch",
+            "program": "${file}",
+            "cwd": "${fileDirname}",
+            "port": 9000
+        }
+    ]
+}
+
+
+obs: o /var/www é o diretório que a aplicação vai ficar instalada no container. e o ${workspaceFolder} não precisa alterar, pois o VScode já pega 
+o caminho do diretório do projeto que está sendo trabalhando na maquina hospedeira.
+
+3. Para aumentar o tempo que o servidor permitirá fazer debug, segue um exemplo:
+
+server {
+    listen 80;
+    index index.php index.html;
+    server_name localhost;
+    root /var/www/public;
+
+    client_max_body_size 2038M;
+
+    location	/ {
+        try_files $uri $uri/ /$uri /index.php$is_args$args;
+    }
+
+    location ~ \.php$ {
+        fastcgi_split_path_info ^(.+\.php)(/.+)$;
+        fastcgi_pass app:9000;
+        fastcgi_index index.php;
+        fastcgi_temp_file_write_size 10m;
+        fastcgi_busy_buffers_size 512k;
+        fastcgi_buffer_size 512k;
+        fastcgi_buffers 16 512k;
+        fastcgi_connect_timeout 300;
+        fastcgi_send_timeout 300;
+        fastcgi_read_timeout 3600;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param PATH_INFO $fastcgi_path_info;
+    }
+
+
+}
+
+
+Na verdade, adicionando as linhas abaixo na configuração atual do servidor nginx, já vai funcionar.
+
+        fastcgi_temp_file_write_size 10m;
+        fastcgi_busy_buffers_size 512k;
+        fastcgi_buffer_size 512k;
+        fastcgi_buffers 16 512k;
+        fastcgi_connect_timeout 300;
+        fastcgi_send_timeout 300;
+        fastcgi_read_timeout 3600;
 
 
 
